@@ -1,0 +1,19 @@
+.centeredContent{
+    display: flex;
+    justify-self: center;
+    width: 75%;
+}
+
+.contentContainer {
+    max-width : 100%;
+}
+
+.container {
+    display: flex;
+    padding: 5px 5px;
+    justify-content: center;
+}
+
+.width_100 {
+    width: 100%;
+}
