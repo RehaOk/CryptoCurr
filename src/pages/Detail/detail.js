@@ -87,7 +87,7 @@ const Detail = (props) => {
     }, []);
 
     const getMaxPrice = (data) => {
-        if(data.price >= maxPrice){
+        if (data.price >= maxPrice) {
             maxPrice = data.price;
         }
     };
@@ -95,7 +95,7 @@ const Detail = (props) => {
     const refactorHistory = (history) => {
         return history.map(data => {
             getMaxPrice(data);
-            return {priceUsd: setDigits(data.priceUsd), date: data.date.split('T')[0]};
+            return { priceUsd: setDigits(data.priceUsd), date: data.date.split('T')[0] };
         });
     };
 
@@ -114,31 +114,31 @@ const Detail = (props) => {
                                     <b>{asset.name}</b>
                                 </li>
                                 <li className="list-group-item list-group-item-action">
-                                    { SUPPLY }
+                                    {SUPPLY}
                                     <span className="badge badge-primary badge-pill float-right">{setDigits(asset.supply)}</span>
                                 </li>
                                 <li className="list-group-item list-group-item-action">
-                                    {MAX_SUPPLY }
+                                    {MAX_SUPPLY}
                                     <span className="badge badge-primary badge-pill float-right">{setDigits(asset.maxSupply)}</span>
                                 </li>
                                 <li className="list-group-item list-group-item-action">
-                                    { MARKET_CAP_USD }
+                                    {MARKET_CAP_USD}
                                     <span className="badge badge-primary badge-pill float-right">{setDigits(asset.marketCapUsd)}</span>
                                 </li>
                                 <li className="list-group-item list-group-item-action">
-                                    { VOLUME_USD_24 }
+                                    {VOLUME_USD_24}
                                     <span className="badge badge-primary badge-pill float-right">{setDigits(asset.volumeUsd24Hr)}</span>
                                 </li>
                                 <li className="list-group-item list-group-item-action">
-                                    { PRICE_USD }
+                                    {PRICE_USD}
                                     <span className="badge badge-primary badge-pill float-right">{setDigits(asset.priceUsd)}</span>
                                 </li>
                                 <li className="list-group-item list-group-item-action">
-                                    { CHANGE_PERCENT_24 }
+                                    {CHANGE_PERCENT_24}
                                     <span className="badge badge-primary badge-pill float-right">{(Number(asset.changePercent24Hr)).toFixed(5)}</span>
                                 </li>
                                 <li className="list-group-item list-group-item-action">
-                                    { VWAP_24 }
+                                    {VWAP_24}
                                     <span className="badge badge-primary badge-pill float-right">{setDigits(asset.vwap24Hr)}</span>
                                 </li>
                             </ul>
@@ -146,10 +146,10 @@ const Detail = (props) => {
                         <div id="chart" className="col-sm-12 col-md-9 col-lg-9 col-xl-9 mt-5 d-none">
                             <div className={detailCss.contentContainer}>
                                 <LineChart width={500} height={300} data={history}>
-                                    <XAxis dataKey="date"/>
-                                    <YAxis dataKey="priceUsd" domain={[0, maxPrice]}/>
+                                    <XAxis dataKey="date" />
+                                    <YAxis dataKey="priceUsd" domain={[0, maxPrice]} />
                                     <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-                                    <Tooltip/>
+                                    <Tooltip />
                                     <Legend />
                                     <Line type="monotone" dataKey="priceUsd" stroke="#007BFF" />
                                     {/* <Line type="monotone" dataKey="date" stroke="#82ca9d" /> */}
