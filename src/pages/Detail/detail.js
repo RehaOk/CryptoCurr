@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import axios from "axios";
+import $ from "jquery";
 import detailCss from "./detailCss.module.css";
 import { setDigits } from "../../utils/utils";
 import Header from "../../components/Header/header";
@@ -76,6 +77,9 @@ const Detail = (props) => {
     useEffect(() => {
         getHistory(props.match.params.id).then((res) => {
             setPriceHistory(refactorHistory(res.data.data));
+            $('#spinner').addClass('d-none');
+            $('#table').removeClass('d-none');
+            $('#chart').removeClass('d-none');
             console.log(res.data.data);
         }, (err) => {
             console.log(err);
@@ -100,8 +104,11 @@ const Detail = (props) => {
             <Header asset={asset} />
             <div className={detailCss.container}>
                 <div className={detailCss.centeredContent}>
-                    <div className={["row", detailCss.width_100].join(" ")}>
-                        <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                    <div className={[detailCss.row, detailCss.width_100].join(" ")}>
+                        <div class="d-flex align-items-center">
+                            <div id="spinner" class="spinner-border text-primary ml-auto" role="status" aria-hidden="true"></div>
+                        </div>
+                        <div id="table" className="col-sm-12 col-md-3 col-lg-3 col-xl-3 d-none">
                             <ul className="list-group list-group-flush">
                                 <li className="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                     <b>{asset.name}</b>
@@ -136,7 +143,7 @@ const Detail = (props) => {
                                 </li>
                             </ul>
                         </div>
-                        <div className="col-sm-12 col-md-9 col-lg-9 col-xl-9 mt-5">
+                        <div id="chart" className="col-sm-12 col-md-9 col-lg-9 col-xl-9 mt-5 d-none">
                             <div className={detailCss.contentContainer}>
                                 <LineChart width={500} height={300} data={history}>
                                     <XAxis dataKey="date"/>
