@@ -61,10 +61,42 @@ const getHistory = (assetId) => {
     });
 };
 
+const getMarkets = () => {
+    return new Promise((resolve, reject) => {
+        axios
+            .get(
+                `https://api.coincap.io/v2/markets`
+            )
+            .then(response => {
+                responseHandler(response, resolve);
+            })
+            .catch(error => {
+                errorHandler(error, reject);
+            });
+    });
+};
+
+const getExchangeWithId = (id) => {
+    return new Promise((resolve, reject) => {
+        axios
+            .get(
+                `https://api.coincap.io/v2/exchanges/${id}`
+            )
+            .then(response => {
+                responseHandler(response, resolve);
+            })
+            .catch(error => {
+                errorHandler(error, reject);
+            });
+    });
+};
+
 const Detail = (props) => {
     const [asset, setAsset] = useState([]);
     const [history, setPriceHistory] = useState([]);
-
+    const [markets, setMarkets] = useState([]);
+    let currencyAvailableMarkets;
+    let exchangeUrls = [];
     useEffect(() => {
         getAsset(props.match.params.id).then((res) => {
             setAsset(res.data.data);
@@ -73,6 +105,25 @@ const Detail = (props) => {
             console.log(err);
         });
     }, []);
+
+    useEffect(() => {
+        getMarkets().then((res) => {
+            setMarkets(res.data.data);
+            console.log("markets");
+            getCurrencyAvailableMarkets(res.data.data).map((currencyAvailableMarket) => {
+                if(currencyAvailableMarket){
+                    getExchangeWithId(currencyAvailableMarket.exchangeId).then((exchange) => {
+                        exchangeUrls.push(exchange.data.data.exchangeUrl);
+                    }, () => {
+                        console.log("error:")
+                    });
+                }
+            });
+            console.log("exchangeUrls: "+exchangeUrls);
+        }, (err) => {
+            console.log("markets -" + err);
+        });
+    }, [asset]);
 
     useEffect(() => {
         getHistory(props.match.params.id).then((res) => {
@@ -86,6 +137,18 @@ const Detail = (props) => {
         });
     }, []);
 
+    const getCurrencyAvailableMarkets = (markets) => {
+        return currencyAvailableMarkets = markets.map((market) => {
+            if(asset.name){
+                if(market.baseId.toLowerCase() === asset.name.toLowerCase()){
+                    return market;
+                } else {
+                    return undefined;
+                }
+            }
+        });
+    };
+
     const getMaxPrice = (data) => {
         if (data.price >= maxPrice) {
             maxPrice = data.price;
@@ -98,6 +161,12 @@ const Detail = (props) => {
             return { priceUsd: setDigits(data.priceUsd), date: data.date.split('T')[0] };
         });
     };
+
+    const demoOnClick = (e) => {
+        // chartX,chartY,activeTooltipIndex,activeLabel,activePayload,activeCoordinate
+        alert(e.activeTooltipIndex + " " + e.activeLabel + " " + e.activePayload);
+        console.log(e.activePayload);
+    }
 
     return (
         <div>
@@ -114,47 +183,26 @@ const Detail = (props) => {
                                     <b>{asset.name}</b>
                                 </li>
                                 <li className="list-group-item list-group-item-action">
-                                    {SUPPLY}
-                                    <span className="badge badge-primary badge-pill float-right">{setDigits(asset.supply)}</span>
+                                    OPEN
+                                    <span className="badge badge-primary badge-pill float-right">{setDigits(/* candles.open */)}</span>
                                 </li>
                                 <li className="list-group-item list-group-item-action">
-                                    {MAX_SUPPLY}
-                                    <span className="badge badge-primary badge-pill float-right">{setDigits(asset.maxSupply)}</span>
+                                    HIGH
+                                    <span className="badge badge-primary badge-pill float-right">{setDigits(/* candles.high */)}</span>
                                 </li>
                                 <li className="list-group-item list-group-item-action">
-                                    {MARKET_CAP_USD}
-                                    <span className="badge badge-primary badge-pill float-right">{setDigits(asset.marketCapUsd)}</span>
+                                    LOW
+                                    <span className="badge badge-primary badge-pill float-right">{setDigits(/* candles.low */)}</span>
                                 </li>
                                 <li className="list-group-item list-group-item-action">
-                                    {VOLUME_USD_24}
-                                    <span className="badge badge-primary badge-pill float-right">{setDigits(asset.volumeUsd24Hr)}</span>
+                                    CLOSE
+                                    <span className="badge badge-primary badge-pill float-right">{setDigits(/* candles.close */)}</span>
                                 </li>
                                 <li className="list-group-item list-group-item-action">
-                                    {PRICE_USD}
-                                    <span className="badge badge-primary badge-pill float-right">{setDigits(asset.priceUsd)}</span>
-                                </li>
-                                <li className="list-group-item list-group-item-action">
-                                    {CHANGE_PERCENT_24}
-                                    <span className="badge badge-primary badge-pill float-right">{(Number(asset.changePercent24Hr)).toFixed(5)}</span>
-                                </li>
-                                <li className="list-group-item list-group-item-action">
-                                    {VWAP_24}
-                                    <span className="badge badge-primary badge-pill float-right">{setDigits(asset.vwap24Hr)}</span>
+                                    VOLUME
+                                    <span className="badge badge-primary badge-pill float-right">{setDigits(/* candles.volume */)}</span>
                                 </li>
                             </ul>
-                        </div>
-                        <div id="chart" className="col-sm-12 col-md-9 col-lg-9 col-xl-9 mt-5 d-none">
-                            <div className={detailCss.contentContainer}>
-                                <LineChart width={500} height={300} data={history}>
-                                    <XAxis dataKey="date" />
-                                    <YAxis dataKey="priceUsd" domain={[0, maxPrice]} />
-                                    <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Line type="monotone" dataKey="priceUsd" stroke="#007BFF" />
-                                    {/* <Line type="monotone" dataKey="date" stroke="#82ca9d" /> */}
-                                </LineChart>
-                            </div>
                         </div>
                     </div>
                 </div>
