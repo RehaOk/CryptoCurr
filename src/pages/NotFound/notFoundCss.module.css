@@ -1,23 +1,8 @@
-.centeredContent{
-    display: flex;
-    justify-self: center;
-    width: 75%;
-}
-
-.contentContainer {
-    max-width : 100%;
-    overflow-x: auto;
-}
-
 .container {
     min-height: 500px;
     display: flex;
     padding: 5px 5px;
     justify-content: center;
-}
-
-.width_100 {
-    width: 100% !important;
 }
 
 .row {
@@ -26,4 +11,19 @@
     flex-wrap: wrap;
     margin-right: -15px;
     margin-left: -15px;
+}
+
+.width_100 {
+    width: 100% !important;
+}
+
+.centeredContent{
+    display: flex;
+    justify-self: center;
+    width: 75%;
+}
+
+.alignCenter {
+    display: flex;
+    align-self: center;
 }

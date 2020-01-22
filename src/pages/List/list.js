@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import listCss from "./listCss.module.css"
-import axios from "axios";
-import { Link } from "react-router-dom";
 import $ from "jquery";
+import axios from "axios";
+import listCss from "./listCss.module.css"
 import Header from "../../components/Header/header";
 import Footer from "../../components/Footer/footer";
+
+import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 
 const responseHandler = (response, resolve) => {
   if (response.status === 200) {
@@ -72,7 +73,6 @@ const List = () => {
   useEffect(() => {
     getRates().then((res) => {
       setRates(res.data.data);
-      console.log(res.data.data);
     }, (err) => {
       console.log(err);
     });
@@ -93,7 +93,6 @@ const List = () => {
   };
 
   const sortTableRows = (assets) => {
-    console.log(assets);
     let sortBy;
     switch (sortType) {
       case "Symbol":
@@ -125,7 +124,6 @@ const List = () => {
     assets = sortTableRows(assets);
     return assets.map(asset => {
       if (searchTerm === "") {
-        console.log("asset.name: " + asset.name + " asset.priceUsd: " + asset.priceUsd + " covnversionRate: " + covnversionRate);
         return (
           <tr>
             <th scope="row">{asset.rank}</th>
@@ -171,12 +169,10 @@ const List = () => {
     if (searchTerm === "") {
       setSearchTerm(searchTerm);
     }
-    console.log(searchTerm);
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    console.log("onSubmit:" + searchTerm);
     setSearchTerm(searchTerm);
   };
 
