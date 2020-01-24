@@ -50,14 +50,64 @@ const getRates = () => {
       });
   });
 };
+let currentPage = 1;
+let numberOfPages = 0;
+let recordsPerPage = 10;
+function numPages(assets) {
+  numberOfPages = Math.ceil(assets.length / recordsPerPage);
+}
+function prevPage(assets, setAssetsToShow) {
+  if (currentPage > 1) {
+    currentPage--;
+    changePage(currentPage, assets, setAssetsToShow);
+  }
+}
+
+function nextPage(assets, setAssetsToShow) {
+  if (currentPage < numberOfPages) {
+    currentPage++;
+    changePage(currentPage, assets, setAssetsToShow);
+  }
+}
+
+function changePage(page, assets, setAssetsToShow) {
+    let elementsToShow = [];
+    // Validate page
+    if (page < 1) page = 1;
+    if (page > numberOfPages) page = numberOfPages;
+
+    for (var i = (page-1) * recordsPerPage; i < (page * recordsPerPage); i++) {
+        elementsToShow.push(assets[i]);
+    }
+    setAssetsToShow(elementsToShow);
+    currentPage = page;
+}
+
+function renderPagination(numberOfPages, assets, setAssetsToShow) {
+  let pagination = [];
+  pagination.push(<li onClick={() => prevPage(assets, setAssetsToShow)} class="page-item"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a></li>);
+  for(let i = 1; i <= numberOfPages; i++) {
+    if(i === currentPage){
+      pagination.push(<li onClick={() => changePage(i, assets, setAssetsToShow)} class="page-item active"><a class="page-link" href="#">{i}</a></li>);
+    } else {
+      pagination.push(<li onClick={() => changePage(i, assets, setAssetsToShow)} class="page-item"><a class="page-link" href="#">{i}</a></li>);
+    }
+  }
+  pagination.push(<li onClick={() => nextPage(assets, setAssetsToShow)} class="page-item"><a class="page-link" href="#">Next</a></li>);
+  return pagination.map((item) => {
+    return item;
+  });
+}
 
 const List = () => {
   const [rates, setRates] = useState([])
-  let [assets, setAssets] = useState([])
+  const [assets, setAssets] = useState([])
+  const [selectedRate, selectRate] = useState('USD')
+  const [sortType, selectSortType] = useState('Rank')
+  const [covnversionRate, setCovnversionRate] = useState(1)
+  const [assetsToShow, setAssetsToShow] = useState([])
   let [searchTerm, setSearchTerm] = useState('');
-  let [selectedRate, selectRate] = useState('USD')
-  let [sortType, selectSortType] = useState('Rank')
-  let [covnversionRate, setCovnversionRate] = useState(1)
+  
 
   useEffect(() => {
     getAssets().then((res) => {
@@ -69,6 +119,17 @@ const List = () => {
       console.log(err);
     });
   }, []);
+
+  useEffect(() => {
+    numPages(assets);
+    if(assets.length !== 0) {
+      changePage(1, assets, setAssetsToShow);
+    }
+  },[assets]);
+
+  useEffect(() => {
+    console.log("assetsToShow: " + assetsToShow);
+  },[assetsToShow]);
 
   useEffect(() => {
     getRates().then((res) => {
@@ -121,7 +182,7 @@ const List = () => {
 
   const renderTable = () => {
     let indexCount = 0;
-    assets = sortTableRows(assets);
+    let assets = sortTableRows(assetsToShow);
     return assets.map(asset => {
       if (searchTerm === "") {
         return (
@@ -265,6 +326,11 @@ const List = () => {
                 {renderTable()}
               </tbody>
             </table>
+            <nav className="float-right" aria-label="...">
+              <ul class="pagination">
+                  {renderPagination(numberOfPages, assets, setAssetsToShow)}
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
