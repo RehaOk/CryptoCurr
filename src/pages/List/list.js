@@ -7,6 +7,18 @@ import Footer from "../../components/Footer/footer";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
+const SYMBOL = "Symbol"
+const NAME = "Name"
+const SUPPLY = "Supply"
+const MARKET_CAP = "Market Cap"
+const VOLUME = "Volume"
+const PRICE = "Price"
+const RANK = "Rank"
+
+let currentPage = 1;
+let numberOfPages = 0;
+let recordsPerPage = 10;
+
 const responseHandler = (response, resolve) => {
   if (response.status === 200) {
     resolve(response);
@@ -50,44 +62,43 @@ const getRates = () => {
       });
   });
 };
-let currentPage = 1;
-let numberOfPages = 0;
-let recordsPerPage = 10;
-function numPages(assets) {
+
+const numPages = (assets) => {
   numberOfPages = Math.ceil(assets.length / recordsPerPage);
 }
-function prevPage(assets, setAssetsToShow) {
+
+const prevPage = (assets, setAssetsToShow) => {
   if (currentPage > 1) {
     currentPage--;
     changePage(currentPage, assets, setAssetsToShow);
   }
 }
 
-function nextPage(assets, setAssetsToShow) {
+const nextPage = (assets, setAssetsToShow) => {
   if (currentPage < numberOfPages) {
     currentPage++;
     changePage(currentPage, assets, setAssetsToShow);
   }
 }
 
-function changePage(page, assets, setAssetsToShow) {
-    let elementsToShow = [];
-    // Validate page
-    if (page < 1) page = 1;
-    if (page > numberOfPages) page = numberOfPages;
+const changePage = (page, assets, setAssetsToShow) => {
+  let elementsToShow = [];
+  // Validate page
+  if (page < 1) page = 1;
+  if (page > numberOfPages) page = numberOfPages;
 
-    for (var i = (page-1) * recordsPerPage; i < (page * recordsPerPage); i++) {
-        elementsToShow.push(assets[i]);
-    }
-    setAssetsToShow(elementsToShow);
-    currentPage = page;
+  for (var i = (page - 1) * recordsPerPage; i < (page * recordsPerPage); i++) {
+    elementsToShow.push(assets[i]);
+  }
+  setAssetsToShow(elementsToShow);
+  currentPage = page;
 }
 
-function renderPagination(numberOfPages, assets, setAssetsToShow) {
+const renderPagination = (numberOfPages, assets, setAssetsToShow) => {
   let pagination = [];
   pagination.push(<li onClick={() => prevPage(assets, setAssetsToShow)} class="page-item"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a></li>);
-  for(let i = 1; i <= numberOfPages; i++) {
-    if(i === currentPage){
+  for (let i = 1; i <= numberOfPages; i++) {
+    if (i === currentPage) {
       pagination.push(<li onClick={() => changePage(i, assets, setAssetsToShow)} class="page-item active"><a class="page-link" href="#">{i}</a></li>);
     } else {
       pagination.push(<li onClick={() => changePage(i, assets, setAssetsToShow)} class="page-item"><a class="page-link" href="#">{i}</a></li>);
@@ -107,7 +118,6 @@ const List = () => {
   const [covnversionRate, setCovnversionRate] = useState(1)
   const [assetsToShow, setAssetsToShow] = useState([])
   let [searchTerm, setSearchTerm] = useState('');
-  
 
   useEffect(() => {
     getAssets().then((res) => {
@@ -122,14 +132,10 @@ const List = () => {
 
   useEffect(() => {
     numPages(assets);
-    if(assets.length !== 0) {
+    if (assets.length !== 0) {
       changePage(1, assets, setAssetsToShow);
     }
-  },[assets]);
-
-  useEffect(() => {
-    console.log("assetsToShow: " + assetsToShow);
-  },[assetsToShow]);
+  }, [assets]);
 
   useEffect(() => {
     getRates().then((res) => {
@@ -146,7 +152,7 @@ const List = () => {
         setCovnversionRate(rate.rateUsd);
       }
     });
-    console.log("covnversionRate: " + covnversionRate);
+    console.log("CovnversionRate: " + covnversionRate);
   };
 
   const isSearchTermInRow = (searchTerm, name, symbol) => {
@@ -260,7 +266,6 @@ const List = () => {
     getConversionRate();
   }, [selectedRate]);
 
-
   return (
     <div>
       <Header />
@@ -293,13 +298,13 @@ const List = () => {
               Sort By
                         </button>
             <div className="dropdown-menu sort" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#">Symbol</a>
-              <a class="dropdown-item" href="#">Name</a>
-              <a class="dropdown-item" href="#">Supply</a>
-              <a class="dropdown-item" href="#">Market Cap</a>
-              <a class="dropdown-item" href="#">Volume</a>
-              <a class="dropdown-item" href="#">Price</a>
-              <a class="dropdown-item" href="#">Rank</a>
+              <a class="dropdown-item" href="#">{SYMBOL}</a>
+              <a class="dropdown-item" href="#">{NAME}</a>
+              <a class="dropdown-item" href="#">{SUPPLY}</a>
+              <a class="dropdown-item" href="#">{MARKET_CAP}</a>
+              <a class="dropdown-item" href="#">{VOLUME}</a>
+              <a class="dropdown-item" href="#">{PRICE}</a>
+              <a class="dropdown-item" href="#">{RANK}</a>
             </div>
           </div>
         </form>
@@ -314,12 +319,12 @@ const List = () => {
               <thead>
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">Symbol</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Supply</th>
-                  <th scope="col">Market Cap {selectedRate}</th>
-                  <th scope="col">Volume {selectedRate} 24Hr</th>
-                  <th scope="col">Price {selectedRate}</th>
+                  <th scope="col">{SYMBOL}</th>
+                  <th scope="col">{NAME}</th>
+                  <th scope="col">{SUPPLY}</th>
+                  <th scope="col">{MARKET_CAP} {selectedRate}</th>
+                  <th scope="col">{VOLUME} {selectedRate} 24Hr</th>
+                  <th scope="col">{PRICE} {selectedRate}</th>
                 </tr>
               </thead>
               <tbody>
@@ -328,7 +333,7 @@ const List = () => {
             </table>
             <nav className="float-right" aria-label="...">
               <ul class="pagination">
-                  {renderPagination(numberOfPages, assets, setAssetsToShow)}
+                {renderPagination(numberOfPages, assets, setAssetsToShow)}
               </ul>
             </nav>
           </div>

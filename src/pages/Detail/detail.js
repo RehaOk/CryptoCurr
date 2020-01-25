@@ -156,7 +156,7 @@ const Detail = (props) => {
 
     const refactorHistory = (history) => {
         return history.map(data => {
-            getMaxPrice(data);
+            getMaxPrice(data); // get max price for chart
             return { priceUsd: setDigits(data.priceUsd), date: data.date.split('T')[0] };
         });
     };
@@ -224,7 +224,6 @@ const Detail = (props) => {
                                     <Tooltip />
                                     <Legend />
                                     <Line type="monotone" dataKey="priceUsd" stroke="#007BFF" />
-                                    {/* <Line type="monotone" dataKey="date" stroke="#82ca9d" /> */}
                                 </LineChart>
                             </div>
                         </div>
