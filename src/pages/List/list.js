@@ -188,9 +188,9 @@ const List = () => {
 
   const renderTable = () => {
     let indexCount = 0;
-    let assets = sortTableRows(assetsToShow);
-    return assets.map(asset => {
-      if (searchTerm === "") {
+    if (searchTerm === "") {
+      let assetsOnPage = sortTableRows(assetsToShow);
+      return assetsOnPage.map(asset => {
         return (
           <tr>
             <th scope="row">{asset.rank}</th>
@@ -202,21 +202,26 @@ const List = () => {
             <td>{asset.priceUsd * covnversionRate}</td>
           </tr>
         )
-      } else if (searchTerm !== undefined && isSearchTermInRow(searchTerm, asset.name, asset.symbol)) {
-        indexCount += 1;
-        return (
-          <tr>
-            <th scope="row">{indexCount}</th>
-            <td><Link to={'/detail/' + asset.id}>{asset.symbol}</Link></td>
-            <td><Link to={'/detail/' + asset.id}>{asset.name}</Link></td>
-            <td>{asset.supply * covnversionRate}</td>
-            <td>{asset.marketCapUsd * covnversionRate}</td>
-            <td>{asset.volumeUsd24Hr * covnversionRate}</td>
-            <td>{asset.priceUsd * covnversionRate}</td>
-          </tr>
-        )
-      }
-    });
+      });
+    } else if (searchTerm !== undefined) {
+      let assetsOnPage = sortTableRows(assets);
+      return assetsOnPage.map(asset => {
+        if (isSearchTermInRow(searchTerm, asset.name, asset.symbol)) {
+          indexCount += 1;
+          return (
+            <tr>
+              <th scope="row">{indexCount}</th>
+              <td><Link to={'/detail/' + asset.id}>{asset.symbol}</Link></td>
+              <td><Link to={'/detail/' + asset.id}>{asset.name}</Link></td>
+              <td>{asset.supply * covnversionRate}</td>
+              <td>{asset.marketCapUsd * covnversionRate}</td>
+              <td>{asset.volumeUsd24Hr * covnversionRate}</td>
+              <td>{asset.priceUsd * covnversionRate}</td>
+            </tr>
+          )
+        }
+      });
+    }
   };
 
   const renderDropdown = () => {
